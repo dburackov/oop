@@ -96,12 +96,16 @@ void View::on_fillColorButton_clicked()
 void View::on_undoButton_clicked()
 {
     scene->undo();
+    scene->setActiveItem(0);
+    ui->comboBox->setCurrentIndex(0);
 }
 
 
 void View::on_redoButton_clicked()
 {
     scene->redo();
+    scene->setActiveItem(0);
+    ui->comboBox->setCurrentIndex(0);
 }
 
 
