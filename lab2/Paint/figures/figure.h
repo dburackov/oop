@@ -16,7 +16,6 @@ enum FigureType {
 class Figure : public QGraphicsItem
 {
 public:
-    Figure();
 
     FigureType type;
     std::vector<QPointF> points;

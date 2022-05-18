@@ -1,6 +1,6 @@
 #include "Polyline.h"
 
-Polyline::Polyline() : Figure()
+Polyline::Polyline()
 {
 
 }

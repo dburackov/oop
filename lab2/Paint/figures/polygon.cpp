@@ -3,7 +3,7 @@
 #include <QPen>
 
 
-Polygon::Polygon() : Figure()
+Polygon::Polygon()
 {
 
 }

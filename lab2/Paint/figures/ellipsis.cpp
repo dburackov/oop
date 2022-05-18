@@ -4,7 +4,7 @@
 
 
 
-Ellipsis::Ellipsis() : Figure()
+Ellipsis::Ellipsis()
 {
 
 }

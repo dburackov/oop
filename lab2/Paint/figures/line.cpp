@@ -2,12 +2,11 @@
 
 #include <QPen>
 
-Line::Line() : Figure()
+Line::Line()
 {
-    setBoundingRegionGranularity(1);
+
 }
 
-#include <QDebug>
 
 QRectF Line::boundingRect() const
 {

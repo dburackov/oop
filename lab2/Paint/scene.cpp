@@ -204,10 +204,8 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if (copy) {
         QPointF shift = QPointF(activeFigure->points.back().x() - event->scenePos().x(), activeFigure->points.back().y() - event->scenePos().y());
         for (size_t i = 0; i < tempFigure->points.size(); ++i) {
-            qDebug() << ">>>>";
             tempFigure->points[i] = QPointF(activeFigure->points[i].x() - shift.x(), activeFigure->points[i].y() - shift.y());
         }
-        qDebug() << "!!!";
         update();
         return;
     }

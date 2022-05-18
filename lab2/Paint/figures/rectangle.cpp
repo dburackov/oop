@@ -2,12 +2,11 @@
 
 #include <QPen>
 
-Rectangle::Rectangle() : Figure()
+Rectangle::Rectangle()
 {
 
 }
 
-#include <QDebug>
 
 QRectF Rectangle::boundingRect() const
 {
