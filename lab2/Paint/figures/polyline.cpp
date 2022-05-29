@@ -2,7 +2,7 @@
 
 Polyline::Polyline()
 {
-
+    type = "Polyline";
 }
 
 QRectF Polyline::boundingRect() const

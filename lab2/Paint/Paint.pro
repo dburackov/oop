@@ -9,6 +9,13 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    creators/creator.cpp \
+    creators/ellipsiscreator.cpp \
+    creators/linecreator.cpp \
+    creators/polygoncreator.cpp \
+    creators/polylinecreator.cpp \
+    creators/rectanglecreator.cpp \
+    deserializer.cpp \
     factory.cpp \
     figures/ellipsis.cpp \
     figures/figure.cpp \
@@ -18,9 +25,17 @@ SOURCES += \
     figures/rectangle.cpp \
     main.cpp \
     scene.cpp \
+    serializer.cpp \
     view.cpp
 
 HEADERS += \
+    creators/creator.h \
+    creators/ellipsiscreator.h \
+    creators/linecreator.h \
+    creators/polygoncreator.h \
+    creators/polylinecreator.h \
+    creators/rectanglecreator.h \
+    deserializer.h \
     factory.h \
     figures/Polyline.h \
     figures/ellipsis.h \
@@ -29,6 +44,7 @@ HEADERS += \
     figures/polygon.h \
     figures/rectangle.h \
     scene.h \
+    serializer.h \
     view.h
 
 FORMS += \

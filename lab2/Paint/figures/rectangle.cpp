@@ -4,7 +4,7 @@
 
 Rectangle::Rectangle()
 {
-
+    type = "Rectangle";
 }
 
 

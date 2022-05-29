@@ -1,0 +1,12 @@
+#ifndef TRAPPLUGIN_GLOBAL_H
+#define TRAPPLUGIN_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(TRAPPLUGIN_LIBRARY)
+#  define TRAPPLUGIN_EXPORT Q_DECL_EXPORT
+#else
+#  define TRAPPLUGIN_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // TRAPPLUGIN_GLOBAL_H

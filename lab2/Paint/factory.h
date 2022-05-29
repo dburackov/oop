@@ -1,17 +1,20 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
-#include "figures/ellipsis.h"
-#include "figures/line.h"
-#include "figures/polygon.h"
-#include "figures/rectangle.h"
-#include "figures/Polyline.h"
+#include "creators/creator.h"
+
 
 class Factory
 {
 public:
     Factory();
-    Figure *createFigure(FigureType type, std::vector<QPointF> points, QColor penColor, QColor fillColor, int width);
+
+    Figure *createFigure(QString figureType, std::vector<QPointF> points, QColor penColor, QColor fillColor, int width);
+
+    void addCreator(Creator *creator);
+
+private:
+    std::vector<Creator *> creators;
 
 };
 

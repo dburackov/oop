@@ -4,7 +4,7 @@
 
 Line::Line()
 {
-
+    type = "Line";
 }
 
 

@@ -25,10 +25,11 @@ public slots:
     void addNewFigure();
     void removeFigure();
 
+
 private slots:
     void on_penSizeSlider_valueChanged(int value);
 
-    void on_figures_currentIndexChanged(int index);
+    void on_figures_currentTextChanged(const QString &arg1);
 
     void on_penColorButton_clicked();
 
@@ -43,6 +44,12 @@ private slots:
     void on_copyButton_clicked();
 
     void on_comboBox_currentIndexChanged(int index);
+
+    void on_saveButton_clicked();
+
+    void on_openButton_clicked();
+
+    void on_loadPluginButton_clicked();
 
 private:
     Ui::View *ui;

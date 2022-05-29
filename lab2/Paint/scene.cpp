@@ -1,6 +1,15 @@
-#include "scene.h"
+﻿#include "scene.h"
 
 #include <QDebug>
+
+#include <QGraphicsSceneMouseEvent>
+
+#include "creators/linecreator.h"
+#include "creators/ellipsiscreator.h"
+#include "creators/polygoncreator.h"
+#include "creators/polylinecreator.h"
+#include "creators/rectanglecreator.h"
+
 
 Scene::Scene(QObject *parant) : QGraphicsScene(parant)
 {
@@ -13,7 +22,14 @@ Scene::Scene(QObject *parant) : QGraphicsScene(parant)
     activeFigure = nullptr;
 
     copy = false;
-    selected = false;
+
+    figureType = "Line";
+
+    loadFigure(new LineCreator());
+    loadFigure(new EllipsisCreator());
+    loadFigure(new PolygonCreator());
+    loadFigure(new PolylineCreator());
+    loadFigure(new RectangleCreator());
 }
 
 
@@ -22,10 +38,10 @@ Scene::~Scene()
     delete tempFigure;
     delete activeFigure;
     delete factory;
-    for (size_t i = 0; i < figures.size(); ++i) {
+    for (int i = 0; i < figures.size(); ++i) {
         delete figures[i];
     }
-    for (size_t i = 0; i < deletedFigures.size(); ++i) {
+    for (int i = 0; i < deletedFigures.size(); ++i) {
         delete deletedFigures[i];
     }
 }
@@ -53,6 +69,7 @@ void Scene::copyCommand() {
         if (activeFigure == nullptr) {
             copy = false;
         } else {
+            secondClick = false;
             removeItem(tempFigure);
             delete tempFigure;
             tempFigure = factory->createFigure(activeFigure->type, activeFigure->points,
@@ -62,6 +79,54 @@ void Scene::copyCommand() {
     }
 }
 
+void Scene::save(QString fileName)
+{
+    Serializer::serialize(fileName, figures);
+}
+
+
+void Scene::open(QString fileName)
+{
+    for (int i = 0; i < figures.size(); ++i) {
+        removeItem(figures[i]);
+        emit removeFigureSignal();
+        delete figures[i];
+    }
+    for (int i = 0; i < deletedFigures.size(); ++i) {
+        delete deletedFigures[i];
+    }
+    figures.clear();
+    deletedFigures.clear();
+
+    if (tempFigure != nullptr) {
+        removeItem(tempFigure);
+        delete tempFigure;
+        tempFigure = nullptr;
+    }
+
+    activeFigure = nullptr;
+
+    Deserializer::deserialize(fileName, figures, factory);
+
+    for (int i = 0; i < figures.size(); ++i) {
+        addItem(figures[i]);
+        emit addNewFigureSignal();
+    }
+    update();
+}
+
+void Scene::setFigureType(QString value)
+{
+    figureType = value;
+}
+
+void Scene::loadFigure(Creator *creator)
+{
+    //QString str = creator->figureType;
+    //figcombox->addItem(str);
+    factory->addCreator(creator);
+}
+
 
 void Scene::undo()
 {
@@ -69,7 +134,7 @@ void Scene::undo()
         removeItem(figures.back());
         deletedFigures.push_back(figures.back());
         figures.pop_back();
-        emit removeFigureSignel();
+        emit removeFigureSignal();
         update();
     }
 }
@@ -91,16 +156,16 @@ void Scene::deleteFigure()
 {
     if (activeFigure != nullptr) {
         removeItem(activeFigure);
-        activeFigure->setOpacity(1);//?????
+        activeFigure->setOpacity(1);
         deletedFigures.push_back(activeFigure);
-        for (size_t i = 0; i < figures.size(); ++i) {
+        for (int i = 0; i < figures.size(); ++i) {
             if (figures[i] == activeFigure) {
                 figures.erase(figures.begin() + i);
                 break;
             }
         }
         activeFigure = nullptr;
-        emit removeFigureSignel();
+        emit removeFigureSignal();
         update();
     }
 }
@@ -113,7 +178,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             figures.push_back(tempFigure);
             tempFigure = nullptr;
 
-            for (size_t i = 0; i < deletedFigures.size(); ++i) {
+            for (int i = 0; i < deletedFigures.size(); ++i) {
                 delete deletedFigures[i];
             }
             deletedFigures.clear();
@@ -127,7 +192,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
-    if (figureType == polyline || figureType == polygon) {
+    if (figureType == "Polyline" || figureType == "Polygon") {
         if (event->button() == Qt::LeftButton) {
             if (secondClick) {
 
@@ -135,11 +200,9 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 tempFigure->points.push_back(event->scenePos());
 
             } else {
-                points.push_back(event->scenePos());
-                points.push_back(event->scenePos());
                 secondClick = true;
 
-                tempFigure = factory->createFigure(figureType, points, penColor, fillColor, penSize);
+                tempFigure = factory->createFigure(figureType, {event->scenePos(), event->scenePos()}, penColor, fillColor, penSize);
                 addItem(tempFigure);
             }
         } else if (event->button() == Qt::RightButton) {
@@ -147,17 +210,19 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
             tempFigure->points.pop_back();
 
-            figures.push_back(tempFigure);
-            for (size_t i = 0; i < deletedFigures.size(); ++i) {
-                delete deletedFigures[i];
+            if (tempFigure->points.size() > 1) {
+                figures.push_back(tempFigure);
+                for (int i = 0; i < deletedFigures.size(); ++i) {
+                    delete deletedFigures[i];
+                }
+                deletedFigures.clear();
+                emit addNewFigureSignal();
+            } else {
+                removeItem(tempFigure);
+                delete tempFigure;
             }
-            deletedFigures.clear();
-            points.clear();
-            emit addNewFigureSignal();
 
             tempFigure = nullptr;
-
-
         }
         update();
         return;
@@ -171,7 +236,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
             tempFigure = nullptr;
 
-            for (size_t i = 0; i < deletedFigures.size(); ++i) {
+            for (int i = 0; i < deletedFigures.size(); ++i) {
                 delete deletedFigures[i];
             }
             deletedFigures.clear();
@@ -203,14 +268,14 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (copy) {
         QPointF shift = QPointF(activeFigure->points.back().x() - event->scenePos().x(), activeFigure->points.back().y() - event->scenePos().y());
-        for (size_t i = 0; i < tempFigure->points.size(); ++i) {
+        for (int i = 0; i < tempFigure->points.size(); ++i) {
             tempFigure->points[i] = QPointF(activeFigure->points[i].x() - shift.x(), activeFigure->points[i].y() - shift.y());
         }
         update();
         return;
     }
 
-    if (figureType == polyline || figureType == polygon) {
+    if (figureType == "Polyline" || figureType == "Polygon") {
         if (secondClick) {
             tempFigure->points.back() = event->scenePos();
         }

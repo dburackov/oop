@@ -4,6 +4,8 @@
 #include <QColor>
 #include <QDebug>
 #include <QColorDialog>
+#include <QFileDialog>
+#include <QPluginLoader>
 
 #include "scene.h"
 
@@ -23,7 +25,7 @@ View::View(QWidget *parent)
 
     scene = new Scene();
     scene->setSceneRect(0,0, ui->graphicsView->width() - 20, ui->graphicsView->height() - 20);
-    scene->figureType = FigureType(ui->figures->currentIndex());
+    scene->setFigureType(ui->figures->currentText());
 
     ui->penSizeSlider->setSliderPosition(scene->penSize);
     changeColor(ui->penColor, scene->penColor);
@@ -36,7 +38,8 @@ View::View(QWidget *parent)
     ui->graphicsView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 
     QObject::connect(scene, SIGNAL(addNewFigureSignal()), this, SLOT(addNewFigure()));
-    QObject::connect(scene, SIGNAL(removeFigureSignel()), this, SLOT(removeFigure()));
+    QObject::connect(scene, SIGNAL(removeFigureSignal()), this, SLOT(removeFigure()));
+
 }
 
 View::~View()
@@ -48,6 +51,7 @@ View::~View()
 void View::changeColor(QLabel *label, QColor color) {
     label->setStyleSheet("background-color: " + color.name());
 }
+
 
 void View::addNewFigure()
 {
@@ -67,9 +71,9 @@ void View::on_penSizeSlider_valueChanged(int value)
 }
 
 
-void View::on_figures_currentIndexChanged(int index)
+void View::on_figures_currentTextChanged(const QString &arg1)
 {
-    scene->figureType = FigureType(index);
+    scene->setFigureType(arg1);
 }
 
 
@@ -130,5 +134,46 @@ void View::resizeEvent(QResizeEvent *event)
 void View::on_comboBox_currentIndexChanged(int index)
 {
     scene->setActiveItem(index);
+}
+
+
+void View::on_saveButton_clicked()
+{
+    QString fileName;
+    fileName = QFileDialog::getSaveFileName(this, "Save", "", "dat (*.dat)");
+
+    if (!fileName.isEmpty()) {
+        scene->save(fileName);
+    }
+}
+
+
+void View::on_openButton_clicked()
+{
+    QString fileName;
+    fileName = QFileDialog::getOpenFileName(this, "Save", "", "dat (*.dat)");
+
+    if (!fileName.isEmpty()) {
+        scene->open(fileName);
+    }
+}
+
+#include <QAction>
+
+void View::on_loadPluginButton_clicked()
+{
+    QString fileName;
+    fileName = QFileDialog::getOpenFileName(this, "Save", "../", "dll (*.dll)");
+
+    QPluginLoader loader(fileName);
+    QObject *pobj = qobject_cast<QObject *>(loader.instance());
+    if (pobj) {
+        Creator *pluginObject = qobject_cast<Creator *>(pobj);
+        if (pluginObject) {
+            scene->loadFigure(pluginObject);
+            QString str = pluginObject->figureType;
+            ui->figures->addItem(str);
+        }
+    }
 }
 

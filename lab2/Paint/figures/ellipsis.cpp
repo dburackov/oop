@@ -6,7 +6,7 @@
 
 Ellipsis::Ellipsis()
 {
-
+    type = "Ellipsis";
 }
 
 QRectF Ellipsis::boundingRect() const

@@ -1,6 +1,8 @@
 #include "factory.h"
 
+
 #include <QDebug>
+
 
 Factory::Factory()
 {
@@ -8,40 +10,20 @@ Factory::Factory()
 }
 
 
-Figure *Factory::createFigure(FigureType type, std::vector<QPointF> points, QColor penColor, QColor fillColor, int width)
+Figure *Factory::createFigure(QString figureType, std::vector<QPointF> points, QColor penColor, QColor fillColor, int width)
 {
-    Figure* result = nullptr;
-
-    switch (type) {
-    case line: {
-        result = new Line();
-        break;
+    Figure *result = nullptr;
+    for (int i = 0; i < creators.size(); ++i) {
+        if (figureType == creators[i]->figureType) {
+            result = creators[i]->create(points, penColor, fillColor, width);
+            break;
+        }
     }
-    case rectangle: {
-        result = new Rectangle();
-        break;
-    }
-    case ellipsis: {
-        result = new Ellipsis();
-        break;
-    }
-    case polygon: {
-        result = new Polygon();
-        break;
-    }
-    case polyline: {
-        result = new Polyline();
-        break;
-    }
-    default:
-        break;
-    }
-
-    result->points = points;
-    result->penColor = penColor;
-    result->fillColor = fillColor;
-    result->width = width;
-    result->type = type;
-
     return result;
+}
+
+
+void Factory::addCreator(Creator *creator)
+{
+    creators.push_back(creator);
 }

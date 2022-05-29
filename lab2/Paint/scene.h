@@ -2,6 +2,9 @@
 #define SCENE_H
 
 #include "factory.h"
+#include "serializer.h"
+#include "deserializer.h"
+
 
 #include <vector>
 #include <QGraphicsScene>
@@ -21,26 +24,27 @@ public:
     void deleteFigure();
     void setActiveItem(int index);
     void copyCommand();
+    void save(QString fileName);
+    void open(QString fileName);
+    void setFigureType(QString value);
+    void loadFigure(Creator *creator);
 
-
-    FigureType figureType;
     int penSize;
     QColor penColor;
     QColor fillColor;
 
-    bool copy;
-    bool selected;
-
 signals:
     void addNewFigureSignal();
-    void removeFigureSignel();
+    void removeFigureSignal();
 
 private:
+    bool copy;
+    QString figureType;
+
     QPointF previousPoint;
     bool secondClick;
     Factory *factory;
 
-    std::vector<QPointF> points;
     std::vector<Figure*> figures;
     std::vector<Figure*> deletedFigures;
     Figure *tempFigure;

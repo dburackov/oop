@@ -5,7 +5,7 @@
 
 Polygon::Polygon()
 {
-
+    type = "Polygon";
 }
 
 QRectF Polygon::boundingRect() const
